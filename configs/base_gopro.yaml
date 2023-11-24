@@ -1,20 +1,21 @@
 dataset:
     train:
-        name: GOPRO
+        name: GOPRO_rearrange
         mode: train
         
         sampling: n_c  # "n_n" and "n_c" , "n_l", "n_r"
         overlapping: True
         interval: 1
         
-        root_gt: "./datasets/GOPRO/train"
+        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_train_blur_gamma_resized_cropped/"
+        root_input: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_train_blur_gamma_ratio_5_steps_20000_dec/"
         data_type: "imgs"
         num_frames: 5
         
         # augmentations
         augmentation:
             RandomCrop: 
-                size : [256, 256]
+                size : [128, 128] # [256, 256]
             RandomHorizontalFlip: 
                 p: 0.5
             RandomVerticalFlip: 
@@ -25,19 +26,20 @@ dataset:
             #     p: 0.5
         # dataloader per GPU
         loader:
-            batch_size: 8
+            batch_size: 1 # 8
             num_workers: 8
             
 
     val:
-        name: GOPRO
+        name: GOPRO_rearrange
         mode: val
         
         sampling: n_c  # "n_n" and "n_c" , "n_l", "n_r"
         overlapping: True
         interval: 1
         
-        root_gt: "./datasets/GOPRO/test"
+        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_resized_cropped/"
+        root_input: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_ratio_5_steps_20000_dec/"
         data_type: "imgs"
         num_frames: 5
 
@@ -46,14 +48,15 @@ dataset:
             num_workers: 1
     
     test:
-        name: GOPRO
+        name: GOPRO_rearrange
         mode: val
         
         sampling: n_c  # "n_n" and "n_c" , "n_l", "n_r"
         overlapping: True
         interval: 1
         
-        root_gt: "./datasets/GOPRO/test"
+        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_resized_cropped/"
+        root_input: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_ratio_5_steps_20000_dec/"
         data_type: "imgs"
         num_frames: 5
 

@@ -33,7 +33,7 @@ Model Architecture
 * Python 3.8
 * PyTorch >= 1.5
 ```bash
-git clone  git clone https://github.com/ljzycmd/SimDeblur.git
+git clone  git clone git@github.com:Fork-for-Modify/SimDeblur.git
 
 # install the SimDeblur
 cd SimDeblur
@@ -44,7 +44,7 @@ bash Install.sh
 
 1. Clone the codes of VDTR
 ```bash
-git clone https://github.com/ljzycmd/VDTR.git
+git clone https://github.com/Fork-for-Modify/VDTR
 ```
 
 2. Download and unzip the datasets
@@ -60,14 +60,14 @@ Then create the soft links of the datasets to the `./datasets` folder.
 3. Run the training script
 
 ```bash
-CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 --master_port=10086 train.py ./configs/vdtr/vdtr_dvd.yaml --gpus=4
+CUDA_VISIBLE_DEVICES=4,5,6,7 python -m torch.distributed.launch --nproc_per_node=4 --master_port=10086 train.py ./configs/vdtr/vdtr_gopro.yaml --gpus=4
 ```
 the training logs are saved in ./workdir/*
 
 4. Run the testing script (single GPU, minimum requirement RTX 2080Ti)
 
 ```bash
-python test.py ./configs/vdtr/vdtr_dvd.yaml $Checkpoint_path
+CUDA_VISIBLE_DEVICES=6 python test.py ./configs/vdtr/vdtr_gopro.yaml $Checkpoint_path
 ```
 the testing logs and frames are saved in `./workdir/*`. 
 

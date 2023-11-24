@@ -21,6 +21,28 @@ from .temporal_transformer import TemporalFusion
 from simdeblur.model.build import BACKBONE_REGISTRY
 
 
+def pad2divisible(x, div_times, mode="constant", value=0):
+    """
+    pad x to a new tensor with sizes that are divisible by div_times (pad on right and bottom sides)
+    x: tensor to pad, shape=(b, c, h, w)
+    div_times: divisor, int
+    mode: padding mode, str
+    value: value to pad (for mode='constant'), scalar
+    return: padded tensor
+    """
+    b, n, c, h, w = x.shape
+
+    H, W = (
+        int((h + div_times - 1) / div_times) * div_times,
+        int((w + div_times - 1) / div_times) * div_times,
+    )  # pad to a multiple of scale_factor (div_times)
+
+    pad_h, pad_w = H - h, W - w
+
+    x_pad = F.pad(x, [0, pad_w, 0, pad_h], mode=mode, value=value)
+    return x_pad
+
+
 class BasicBlock(nn.Module):
     def __init__(self, in_channels, stride=1):
         super(BasicBlock, self).__init__()
@@ -56,7 +78,7 @@ class VDTR(nn.Module):
         num_heads=8,
         dropout=0.0,
         ffn_dim=None,
-        ms_fuse=False
+        ms_fuse=False,
     ):
         super().__init__()
         self.num_frames = num_frames
@@ -64,25 +86,27 @@ class VDTR(nn.Module):
 
         if cnn_patch_embedding:
             self.img2feats = nn.Sequential(
-                nn.Conv2d(in_channels, inner_channels//2, 3, 2, 1),
+                nn.Conv2d(in_channels, inner_channels // 2, 3, 2, 1),
                 nn.LeakyReLU(0.1),
-                nn.Conv2d(inner_channels//2, inner_channels, 3, 2, 1),
-                nn.LeakyReLU(0.1)
+                nn.Conv2d(inner_channels // 2, inner_channels, 3, 2, 1),
+                nn.LeakyReLU(0.1),
             )
         else:
-            self.img2feats = Downsample(in_channels, inner_channels, patch_embedding_size)
+            self.img2feats = Downsample(
+                in_channels, inner_channels, patch_embedding_size
+            )
 
         self.feature_encoder = TransUnet(
-                inner_channels,
-                patch_size=4,
-                num_encoder_layers=[1, 1, 1],
-                num_decoder_layers=[1, 1],
-                num_heads=num_heads,
-                dropout=dropout,
-                ffn_dim=ffn_dim,
-                return_ms=False,
-                ms_fuse=ms_fuse
-            )
+            inner_channels,
+            patch_size=4,
+            num_encoder_layers=[1, 1, 1],
+            num_decoder_layers=[1, 1],
+            num_heads=num_heads,
+            dropout=dropout,
+            ffn_dim=ffn_dim,
+            return_ms=False,
+            ms_fuse=ms_fuse,
+        )
 
         self.temporal_fusion = TemporalFusion(
             inner_channels,
@@ -90,7 +114,7 @@ class VDTR(nn.Module):
             temporal_patchsize,
             num_heads,
             dropout,
-            temporal_two_layer
+            temporal_two_layer,
         )
 
         self.reconstructor = nn.Sequential(
@@ -104,28 +128,31 @@ class VDTR(nn.Module):
                 dropout=dropout,
                 ffn_dim=ffn_dim,
             )
-        ) 
-
-        self.upsample = nn.Sequential(
-            nn.Conv2d(inner_channels, inner_channels*4, 1, 1, 0),
-            nn.PixelShuffle(2),
-            nn.Conv2d(inner_channels, inner_channels*4, 1, 1, 0),
-            nn.PixelShuffle(2)
         )
 
-        self.out_proj = nn.Sequential(
-            nn.Conv2d(inner_channels, 3, 1, 1, 0))
+        self.upsample = nn.Sequential(
+            nn.Conv2d(inner_channels, inner_channels * 4, 1, 1, 0),
+            nn.PixelShuffle(2),
+            nn.Conv2d(inner_channels, inner_channels * 4, 1, 1, 0),
+            nn.PixelShuffle(2),
+        )
+
+        self.out_proj = nn.Sequential(nn.Conv2d(inner_channels, 3, 1, 1, 0))
 
     def forward(self, x):
         assert x.dim() == 5, "Input tensor should be in 5 dims!"
+
+        # zzh: padding to multiples of 16
+        H_, W_ = x.shape[-2:] # original size
+        x = pad2divisible(x, 16)
+
         B, N, C, H, W = x.shape
         # image to featurs
         feats = self.img2feats(x.flatten(0, 1))
 
         # single frame feature extraction
         feats = self.feature_encoder(feats)
-        feats = feats.reshape(
-            B, N, -1, H // self.down_times, W // self.down_times)
+        feats = feats.reshape(B, N, -1, H // self.down_times, W // self.down_times)
 
         out = self.temporal_fusion(feats)
 
@@ -135,6 +162,9 @@ class VDTR(nn.Module):
 
         # global residual learning
         out += x[:, self.num_frames // 2]
+
+        # zzh: remove padding
+        out = out[..., :H_, :W_]
 
         return out
 

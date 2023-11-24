@@ -1,3 +1,4 @@
 __pycache__
 datasets/*
 workdir/*
+model_zoo
