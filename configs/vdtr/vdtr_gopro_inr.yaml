@@ -1,11 +1,11 @@
 name: 001_VDTR_C256R20_lr4e4_GOPRO_e2001_B8G8_s
 
-__base_cfg__: ./../base_gopro.yaml
+__base_cfg__: ./../base_gopro_inr.yaml
 
 dataset:
     train:
         loader:
-            batch_size: 8
+            batch_size: 16 # 8
             num_workers: 8
 
 meta_arch: SingleScalePlainCNN

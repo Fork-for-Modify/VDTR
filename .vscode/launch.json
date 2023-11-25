@@ -5,14 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: test",
             "type": "python",
             "request": "launch",
             "program": "test.py",
             "console": "integratedTerminal",
+            "env": {"CUDA_VISIBLE_DEVICES": "6"},
             "args": [
-                "./configs/vdtr/vdtr_gopro.yaml",
-                "model_zoo/001_VDTR_GOPRO.pth"
+                "./configs/vdtr/vdtr_gopro_inr.yaml",
+                "workdir/vdtr/001_VDTR_C256R20_lr4e4_GOPRO_e2001_B8G8_s/20231124_231920/epoch_2000.pth"
             ],
             "justMyCode": false
         }

@@ -7,7 +7,7 @@ dataset:
         overlapping: True
         interval: 1
         
-        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_train_blur_gamma_resized_cropped/"
+        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_train_sharp_resized_cropped/"
         root_input: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_train_blur_gamma_ratio_5_steps_20000_dec/"
         data_type: "imgs"
         num_frames: 5
@@ -15,7 +15,7 @@ dataset:
         # augmentations
         augmentation:
             RandomCrop: 
-                size : [128, 128] # [256, 256]
+                size : [128, 128] # zzh: [256, 256]
             RandomHorizontalFlip: 
                 p: 0.5
             RandomVerticalFlip: 
@@ -26,7 +26,7 @@ dataset:
             #     p: 0.5
         # dataloader per GPU
         loader:
-            batch_size: 1 # 8
+            batch_size: 8
             num_workers: 8
             
 
@@ -38,7 +38,7 @@ dataset:
         overlapping: True
         interval: 1
         
-        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_resized_cropped/"
+        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_sharp_resized_cropped/"
         root_input: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_ratio_5_steps_20000_dec/"
         data_type: "imgs"
         num_frames: 5
@@ -55,7 +55,7 @@ dataset:
         overlapping: True
         interval: 1
         
-        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_resized_cropped/"
+        root_gt: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_sharp_resized_cropped/"
         root_input: "/ssd/0/zzh/dataset/GoPro/GoPRO_INR/GoPro_test_blur_gamma_ratio_5_steps_20000_dec/"
         data_type: "imgs"
         num_frames: 5

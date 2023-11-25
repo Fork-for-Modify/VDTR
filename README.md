@@ -60,14 +60,14 @@ Then create the soft links of the datasets to the `./datasets` folder.
 3. Run the training script
 
 ```bash
-CUDA_VISIBLE_DEVICES=4,5,6,7 python -m torch.distributed.launch --nproc_per_node=4 --master_port=10086 train.py ./configs/vdtr/vdtr_gopro.yaml --gpus=4
+CUDA_VISIBLE_DEVICES=4,5,6,7 python -m torch.distributed.launch --nproc_per_node=4 --master_port=10086 train.py ./configs/vdtr/vdtr_gopro_inr.yaml --gpus=4
 ```
 the training logs are saved in ./workdir/*
 
 4. Run the testing script (single GPU, minimum requirement RTX 2080Ti)
 
 ```bash
-CUDA_VISIBLE_DEVICES=6 python test.py ./configs/vdtr/vdtr_gopro.yaml $Checkpoint_path
+CUDA_VISIBLE_DEVICES=6 python test.py ./configs/vdtr/vdtr_gopro_inr.yaml $Checkpoint_path
 ```
 the testing logs and frames are saved in `./workdir/*`. 
 
